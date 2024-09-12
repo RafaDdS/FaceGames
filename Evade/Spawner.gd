@@ -7,5 +7,8 @@ const BULLET = preload("res://Evade/bullet.tscn")
 
 func _on_timer_timeout():
 	var i := BULLET.instantiate()
-	i.position = marker_1.position.lerp(marker_2.position, randf())
+	if randf() < 0.8:
+		i.position = marker_1.position.lerp(marker_2.position, randf())
+	else:
+		i.position = Vector2(Player.instance.position.x, marker_1.position.y)
 	add_child(i)

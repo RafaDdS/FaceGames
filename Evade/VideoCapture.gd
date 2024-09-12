@@ -3,6 +3,8 @@ extends Control
 class_name VideoCapture
 
 @onready var video_feed = %VideoFeed
+@onready var fail = $Fail
+@onready var end_label = $Fail/MarginContainer2/EndLabel
 
 static var instance:VideoCapture
 static var cap:CVVideoCapture
@@ -18,9 +20,14 @@ var should_draw_face:= true
 var recognize_face_theshold := 0.5
 var save_as_new_face_theshold := 0.3
 
+var start_time:float
+
 signal reset_face
 
 func _ready():
+	get_tree().paused = false
+	start_time = Time.get_unix_time_from_system()
+	
 	instance = self
 	cap = CVVideoCapture.new()
 	cap.open(0, CVConsts.VideoCaptureAPIs.CAP_ANY, null)
@@ -29,7 +36,11 @@ func _ready():
 	
 	detector = CVFaceDetectorYN.create("./Models/face_detection_yunet_2023mar.onnx", "", Vector2(mat.cols,mat.rows), {})
 	recognizer = CVFaceRecognizerSF.create("./Models/face_recognition_sface_2021dec.onnx", "", {})
-
+	
+	await get_tree().process_frame
+	
+	Player.instance.connect("die", enable_fail_screen)
+	
 func _process(_delta):
 	if !cap.is_opened():
 		return
@@ -71,3 +82,20 @@ func _on_release_pressed():
 
 func _on_reset_pressed():
 	emit_signal("reset_face")
+
+func _on_restart_pressed():
+	get_tree().reload_current_scene()
+
+func _on_video_feed_pressed():
+	video_feed.visible = !video_feed.visible
+
+func enable_fail_screen():
+	get_tree().paused = true
+	
+	var time : int = int(Time.get_unix_time_from_system() - start_time)
+	if time<60:
+		end_label.text = end_label.text.replace("XXX", str(time, " sec"))
+	else:
+		end_label.text = end_label.text.replace("XXX", str(time/60, " min ", time%60, " sec"))
+	fail.visible = true
+	

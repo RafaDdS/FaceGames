@@ -1,23 +1,25 @@
 [gd_scene load_steps=4 format=3 uid="uid://cbws2r1opl2si"]
 
-[ext_resource type="Texture2D" uid="uid://ct1j1hsk25roc" path="res://icon.svg" id="1_nxv6f"]
-[ext_resource type="Script" path="res://Evade/Bullet.gd" id="1_s6m3l"]
+[ext_resource type="Script" path="res://Evade/Bullet.gd" id="1_h34te"]
+[ext_resource type="Texture2D" uid="uid://dkm8rcltg3t0c" path="res://Evade/Sprites/Vase.svg" id="2_neplr"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ofjv2"]
-radius = 13.0384
+radius = 30.1496
 
 [node name="Bullet" type="RigidBody2D"]
-gravity_scale = 0.0
+mass = 0.01
+gravity_scale = 0.8
 max_contacts_reported = 2
 contact_monitor = true
-linear_velocity = Vector2(0, 150)
-script = ExtResource("1_s6m3l")
+linear_velocity = Vector2(0, 30)
+script = ExtResource("1_h34te")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 11)
 shape = SubResource("CircleShape2D_ofjv2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_nxv6f")
+texture = ExtResource("2_neplr")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

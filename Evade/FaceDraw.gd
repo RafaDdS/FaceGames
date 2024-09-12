@@ -35,7 +35,6 @@ func draw_face(face):
 	var size := rect.br() - rect.tl() 
 	var factor : float = size.y/viewport_size.y
 	var ct := Vector2.LEFT * (size.x - size.y)/4
-	#var mc := CVCore.mean(VideoCapture.croped, {}).get_vector3()/255.0
 	
 	var re = ct + (face["right_eye"] - rect.tl()) / factor
 	var le = ct + (face["left_eye"] - rect.tl()) / factor

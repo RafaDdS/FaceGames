@@ -1,17 +1,30 @@
 extends RigidBody2D
 
+class_name Player
+
+@onready var map = $".."
 @onready var sprite = $Sprite2D
+@onready var heart_1 = $Heart1
+@onready var heart_2 = $Heart2
 
 @export var max_vel := 350
 @export var aceleration := 3000
 @export var dead_zone := 35
 
+var life := 3
 var face_center:Vector2 = Vector2.ZERO
 
-func _ready():
-	sprite.texture = FaceDraw.img
-	VideoCapture.instance.connect("reset_face", reset_face_position)
+static var instance : Player
 
+signal die
+
+func _ready():
+	instance = self
+	sprite.texture = FaceDraw.img
+	
+	await get_tree().process_frame
+	
+	VideoCapture.instance.connect("reset_face", reset_face_position)
 
 func _process(_delta):
 	if len(VideoCapture.result):
@@ -33,7 +46,16 @@ func _process(_delta):
 			linear_velocity = Vector2.ZERO
 
 func collision():
-	print("Ouch!")
+	life -= 1
+	
+	if life == 2:
+		heart_1.visible = false
+		
+	if life == 1:
+		heart_2.visible = false
+		
+	if life <= 0:
+		emit_signal("die")
 
 func reset_face_position():
 	face_center = Vector2.ZERO
