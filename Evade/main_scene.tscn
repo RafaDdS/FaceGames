@@ -1,0 +1,137 @@
+[gd_scene load_steps=11 format=3 uid="uid://6cci7uoxjsx4"]
+
+[ext_resource type="Script" path="res://Evade/VideoCapture.gd" id="1_xdi74"]
+[ext_resource type="Script" path="res://Evade/FaceDraw.gd" id="2_q3e5s"]
+[ext_resource type="Script" path="res://Evade/Spawner.gd" id="3_4ncta"]
+[ext_resource type="Script" path="res://Evade/Player.gd" id="3_r121i"]
+[ext_resource type="Texture2D" uid="uid://ct1j1hsk25roc" path="res://icon.svg" id="4_h4c7w"]
+
+[sub_resource type="Gradient" id="Gradient_adxfn"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.355, 0.71, 0.366833, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_algr8"]
+gradient = SubResource("Gradient_adxfn")
+width = 1212
+height = 744
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ofjv2"]
+radius = 50.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ithc"]
+size = Vector2(128, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s58wh"]
+size = Vector2(1172, 113)
+
+[node name="Node" type="Node"]
+
+[node name="Face" type="SubViewport" parent="."]
+transparent_bg = true
+
+[node name="Drawer" type="Node2D" parent="Face"]
+script = ExtResource("2_q3e5s")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xdi74")
+
+[node name="VideoFeed" type="TextureRect" parent="HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Interface" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="Open" type="Button" parent="HUD/Interface"]
+layout_mode = 2
+text = "Open"
+
+[node name="Release" type="Button" parent="HUD/Interface"]
+layout_mode = 2
+text = "Release"
+
+[node name="Reset" type="Button" parent="HUD/Interface"]
+layout_mode = 2
+text = "Reset face position"
+
+[node name="Map" type="Node2D" parent="."]
+
+[node name="BackGround" type="Sprite2D" parent="Map"]
+visible = false
+position = Vector2(586, 307)
+texture = SubResource("GradientTexture2D_algr8")
+
+[node name="Spawner" type="Node2D" parent="Map"]
+script = ExtResource("3_4ncta")
+
+[node name="Timer" type="Timer" parent="Map/Spawner"]
+wait_time = 0.5
+autostart = true
+
+[node name="Marker1" type="Marker2D" parent="Map/Spawner"]
+position = Vector2(126, -50)
+
+[node name="Marker2" type="Marker2D" parent="Map/Spawner"]
+position = Vector2(996, -50)
+
+[node name="Player" type="RigidBody2D" parent="Map"]
+position = Vector2(575, 560)
+gravity_scale = 0.0
+angular_damp = 1e+07
+script = ExtResource("3_r121i")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/Player"]
+shape = SubResource("CircleShape2D_ofjv2")
+
+[node name="Sprite2D" type="Sprite2D" parent="Map/Player"]
+
+[node name="Wall" type="StaticBody2D" parent="Map"]
+position = Vector2(63, 575)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/Wall"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_5ithc")
+
+[node name="Sprite2D" type="Sprite2D" parent="Map/Wall"]
+texture = ExtResource("4_h4c7w")
+
+[node name="Wall2" type="StaticBody2D" parent="Map"]
+position = Vector2(1085, 575)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/Wall2"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_5ithc")
+
+[node name="Sprite2D" type="Sprite2D" parent="Map/Wall2"]
+texture = ExtResource("4_h4c7w")
+
+[node name="Wall3" type="StaticBody2D" parent="Map"]
+position = Vector2(1085, 747)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/Wall3"]
+position = Vector2(-504, 46.5)
+shape = SubResource("RectangleShape2D_s58wh")
+
+[connection signal="pressed" from="HUD/Interface/Open" to="HUD" method="_on_open_pressed"]
+[connection signal="pressed" from="HUD/Interface/Release" to="HUD" method="_on_release_pressed"]
+[connection signal="pressed" from="HUD/Interface/Reset" to="HUD" method="_on_reset_pressed"]
+[connection signal="timeout" from="Map/Spawner/Timer" to="Map/Spawner" method="_on_timer_timeout"]
